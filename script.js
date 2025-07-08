@@ -12,39 +12,33 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 
 function playSmashSound() {
-    // Create a short burst of white noise for crunch effect
-    const bufferSize = audioCtx.sampleRate * 0.1; // 0.1 seconds
+   
+    const bufferSize = audioCtx.sampleRate * 0.1;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1; // White noise
+        data[i] = Math.random() * 2 - 1; 
     }
 
     const noiseSource = audioCtx.createBufferSource();
     noiseSource.buffer = buffer;
 
-    // Add a low-frequency tone for impact
     const oscillator = audioCtx.createOscillator();
-    oscillator.type = 'square'; // Square wave for a rougher sound
-    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime); // Low frequency
-
-    // Gain for noise
+    oscillator.type = 'square'; 
+    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime);
     const noiseGain = audioCtx.createGain();
     noiseGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
     noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
 
-    // Gain for oscillator
     const oscGain = audioCtx.createGain();
     oscGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
     oscGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
 
-    // Connect nodes
     noiseSource.connect(noiseGain);
     oscillator.connect(oscGain);
     noiseGain.connect(audioCtx.destination);
     oscGain.connect(audioCtx.destination);
 
-    // Start and stop
     noiseSource.start();
     oscillator.start();
     noiseSource.stop(audioCtx.currentTime + 0.1);
@@ -66,12 +60,10 @@ class Ant {
         
         ctx.save();
         ctx.translate(this.x + this.size / 2, this.y + this.size / 2);
-        // Rotate based on movement direction
         const angle = Math.atan2(this.dy, this.dx);
         ctx.rotate(angle);
 
-        // Draw ant: head, body, and legs
-        ctx.fillStyle = '#3C2F2F'; // Dark brown for ant
+        ctx.fillStyle = '#3C2F2F';
         // Head
         ctx.beginPath();
         ctx.ellipse(0, -this.size / 3, this.size / 6, this.size / 8, 0, 0, Math.PI * 2);
@@ -112,7 +104,6 @@ class Ant {
         this.x += this.dx;
         this.y += this.dy;
 
-        // Bounce off walls
         if (this.x < 0 || this.x > canvas.width - this.size) {
             this.dx = -this.dx;
         }
@@ -138,7 +129,7 @@ function handleClick(event) {
                 ant.isAlive = false;
                 score += 10;
                 scoreDisplay.textContent = `Score: ${score}`;
-                playSmashSound(); // Play smashing sound on hit
+                playSmashSound(); 
             }
         }
     });
@@ -146,7 +137,7 @@ function handleClick(event) {
 
 function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ants = ants.filter(ant => ant.isAlive); // Remove dead ants
+    ants = ants.filter(ant => ant.isAlive); 
     ants.forEach(ant => {
         ant.update();
         ant.draw();
@@ -154,11 +145,8 @@ function updateGame() {
     requestAnimationFrame(updateGame);
 }
 
-// Event listeners
 canvas.addEventListener('click', handleClick);
 
-// Start spawning ants
 setInterval(spawnAnt, antSpawnRate);
 
-// Start game loop
 updateGame();
